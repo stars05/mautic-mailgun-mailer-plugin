@@ -2,17 +2,20 @@
 
 ## Instalation
  - upload the contents in this repo to mautic instalation `plugins/MauticMailgunMailerBundle`
+ - change zone if needed, go to plugins/MauticMailgunMailerBundle/Config/config.php file and change mailer_mailgun_region parameter(us by default or eu)
+ - if you want to change batch send email limit, go to plugins/MauticMailgunMailerBundle/Config/config.php file and change mailer_mailgun_batch_recipient_count parameter to needed number of batch count
+ - to receive webhooks, add your api key to config, go to plugins/MauticMailgunMailerBundle/Config/config.php file and change 
  - remove cache `sudo rm -rf var/cache/*`
  - go to mautic settings > plugins > click `Install / Upgrade Plugin`
  - done.
  
  ## Usage
  
- - Choose Mailgun as the mail service, in mautic mail configuration > Email Settings.
+ - Choose Mailgun Api as the mail service, in mautic mail configuration > Email Settings.
  
  Enter yours:
- - host(is domain): From your admin panel in Mailgin
- - API Key From your admin panel in Mailgin 
+ - host(is domain): From your admin panel in Mailgin Api
+ - API Key From your admin panel in Mailgin Api
 
 ### Add webhook URL to mailgun
 

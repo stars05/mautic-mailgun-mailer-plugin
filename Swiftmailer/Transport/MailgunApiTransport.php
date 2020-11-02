@@ -10,6 +10,7 @@ use Mautic\LeadBundle\Entity\DoNotContact;
 use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_Transport, CallbackTransportInterface
@@ -48,14 +49,19 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
      * @var TransportCallback
      */
     private $transportCallback;
+    /**
+     * @var null
+     */
+    private $webhookSigningKey;
 
-    public function __construct(TransportCallback $transportCallback, Client $client, TranslatorInterface $translator, int $maxBatchLimit, ?int $batchRecipientCount)
+    public function __construct(TransportCallback $transportCallback, Client $client, TranslatorInterface $translator, int $maxBatchLimit, ?int $batchRecipientCount, ?string $webhookSigningKey = null)
     {
         $this->transportCallback = $transportCallback;
         $this->client = $client;
         $this->translator = $translator;
         $this->maxBatchLimit = $maxBatchLimit;
-        $this->batchRecipientCount = $batchRecipientCount ?: 5;
+        $this->batchRecipientCount = $batchRecipientCount ?: 0;
+        $this->webhookSigningKey = $webhookSigningKey;
     }
 
     public function setApiKey(?string $apiKey): void
@@ -183,26 +189,30 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
      *
      * @return mixed
      */
-    public function getCallbackPath()
+    public function getCallbackPath(): string
     {
         return 'mailgun_api';
     }
 
-    /**
-     * Processes the response.
-     */
-    public function processCallbackRequest(Request $request)
+    public function processCallbackRequest(Request $request): void
     {
         $postData = json_decode($request->getContent(), true);
 
+        if (null === $this->webhookSigningKey) {
+            return;
+        }
+
+        $signature = $postData['signature'];
+        if (!$this->verifyCallback($signature['token'], $signature['timestamp'], $signature['signature'])) {
+            throw new HttpException(400, 'Wrong signature');
+        }
 
         if (!isset($postData['event-data'])) {
             // response must be an array
-            return null;
+            return;
         }
 
         $event = $postData['event-data'];
-
         if (!in_array($event['event'], ['bounce', 'rejected', 'complained', 'unsubscribed', 'permanent_fail', 'failed'])) {
             return;
         }
@@ -325,5 +335,16 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
     private function prepareRecipients(array $recipients): string
     {
         return implode(',', array_keys($recipients));
+    }
+
+    function verifyCallback($token, $timestamp, $signature): bool
+    {
+        // check if the timestamp is fresh
+        if (\abs(\time() - $timestamp) > 15) {
+            return false;
+        }
+
+        // returns true if signature is valid
+        return \hash_equals(\hash_hmac('sha256', $timestamp.$token, $this->webhookSigningKey), $signature);
     }
 }
