@@ -27,6 +27,8 @@ Add `https://mautic.loc/mailer/mailgun_api/callback` in the mailgun webhook for 
 
 Now your mautic will be able to send through mailgun API and track email events such as bounce, failed, unsubscribe, spam according to the webhook you set in mailgun.
 
+Mailgun attachments in process.....
+
 ### Mailgun SMTP
 If you need to send messages with mailun smtp, see:
 [Mailgun plugin for Mautic (AFMailgun)](https://github.com/azamuddin/mautic-mailgun-plugin "Mailgun plugin for Mautic (AFMailgun)")

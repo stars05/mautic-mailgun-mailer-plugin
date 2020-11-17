@@ -21,7 +21,7 @@ return [
                 'serviceAlias' => 'swiftmailer.mailer.transport.%s',
                 'arguments' => [
                     'mautic.email.model.transport_callback',
-                    'mautic.http.client',
+                    'mautic.mailgun.guzzle.client',
                     'translator',
                     '%mautic.mailer_mailgun_max_batch_limit%',
                     '%mautic.mailer_mailgun_batch_recipient_count%',
@@ -39,12 +39,15 @@ return [
                     \Mautic\EmailBundle\Model\TransportType::FIELD_API_KEY => true,
                 ],
             ],
+            'mautic.mailgun.guzzle.client' => [
+                'class' => 'GuzzleHttp\Client',
+            ],
         ],
     ],
     'parameters' => [
-        'mailer_mailgun_max_batch_limit' => 300,
-        'mailer_mailgun_batch_recipient_count' => 5,
+        'mailer_mailgun_max_batch_limit' => 4500,
+        'mailer_mailgun_batch_recipient_count' => 1000,
         'mailer_mailgun_region' => 'us',
-        'mailer_mailgun_webhook_signing_key' => null,
+        'mailer_mailgun_webhook_signing_key' => '',
     ],
 ];
