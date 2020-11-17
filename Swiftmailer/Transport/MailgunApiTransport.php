@@ -53,7 +53,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
      */
     private $webhookSigningKey;
 
-    public function __construct(TransportCallback $transportCallback, Client $client, TranslatorInterface $translator, int $maxBatchLimit, ?int $batchRecipientCount, string $webhookSigningKey = '')
+    public function __construct(TransportCallback $transportCallback, Client $client, TranslatorInterface $translator, $maxBatchLimit, $batchRecipientCount, $webhookSigningKey = '')
     {
         $this->transportCallback = $transportCallback;
         $this->client = $client;
@@ -63,22 +63,22 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
         $this->webhookSigningKey = $webhookSigningKey;
     }
 
-    public function setApiKey(?string $apiKey): void
+    public function setApiKey($apiKey)
     {
         $this->apiKey = $apiKey;
     }
 
-    public function setDomain(?string $domain): void
+    public function setDomain($domain)
     {
         $this->domain = $domain;
     }
 
-    public function setRegion(?string $region): void
+    public function setRegion($region)
     {
         $this->region = $region;
     }
 
-    public function start(): void
+    public function start()
     {
         if (empty($this->apiKey)) {
             $this->throwException($this->translator->trans('mautic.email.api_key_required', [], 'validators'));
@@ -94,7 +94,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
      *
      * @throws \Exception
      */
-    public function send(\Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
+    public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
     {
         $count = 0;
         $failedRecipients = (array) $failedRecipients;
@@ -158,7 +158,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
      *
      * @return int
      */
-    public function getMaxBatchLimit(): int
+    public function getMaxBatchLimit()
     {
         return $this->maxBatchLimit;
     }
@@ -174,7 +174,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
      *
      * @return int
      */
-    public function getBatchRecipientCount(\Swift_Message $message, $toBeAdded = 1, $type = 'to'): int
+    public function getBatchRecipientCount(\Swift_Message $message, $toBeAdded = 1, $type = 'to')
     {
         $toCount = is_array($message->getTo()) ? count($message->getTo()) : 0;
         $ccCount = is_array($message->getCc()) ? count($message->getCc()) : 0;
@@ -185,13 +185,15 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
 
     /**
      * Returns a "transport" string to match the URL path /mailer/{transport}/callback.
+     *
+     * @return string
      */
-    public function getCallbackPath(): string
+    public function getCallbackPath()
     {
         return 'mailgun_api';
     }
 
-    public function processCallbackRequest(Request $request): void
+    public function processCallbackRequest(Request $request)
     {
         $postData = json_decode($request->getContent(), true);
         if (!$this->webhookSigningKey) {
@@ -240,7 +242,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
     /**
      * @param array $failedRecipients
      */
-    private function triggerSendError(\Swift_Events_SendEvent $evt, &$failedRecipients): void
+    private function triggerSendError(\Swift_Events_SendEvent $evt, &$failedRecipients)
     {
         $failedRecipients = array_merge(
             $failedRecipients,
@@ -256,12 +258,18 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
         }
     }
 
-    private function getEndpoint(): string
+    /**
+     * @return string|null
+     */
+    private function getEndpoint()
     {
         return str_replace('%region_dot%', 'us' !== ($this->region ?: 'us') ? $this->region.'.' : '', $this->host);
     }
 
-    private function getMessage($message): array
+    /**
+     * @return array|\Swift_Message
+     */
+    private function getMessage($message)
     {
         $this->message = $message;
         $metadata = $this->getMetadata();
@@ -293,7 +301,12 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
         return $messageArray;
     }
 
-    private function getPayload(array $message): array
+    /**
+     * @param array $message
+     *
+     * @return array
+     */
+    private function getPayload($message)
     {
         $payload = [
             'from' => sprintf('%s <%s>', $message['from']['name'], $message['from']['email']),
@@ -315,7 +328,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
         return $payload;
     }
 
-    function verifyCallback(string $token, string $timestamp, string $signature): bool
+    function verifyCallback($token, $timestamp, $signature)
     {
         // check if the timestamp is fresh
         if (\abs(\time() - $timestamp) > 15) {

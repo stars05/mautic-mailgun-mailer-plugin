@@ -1,4 +1,4 @@
-# Mailgun API plugin for Mautic v3
+# Mailgun API plugin for Mautic v2
 
 ## Instalation
  - upload the contents in this repo to mautic instalation `plugins/MauticMailgunMailerBundle`
