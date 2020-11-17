@@ -1,7 +1,7 @@
 # Mailgun API plugin for Mautic v3
 
 ## Instalation
- - upload the contents in this repo to mautic instalation `plugins/MauticMailgunMailerBundle`
+ - upload the contents in this repo to Mautic instalation `plugins/MauticMailgunMailerBundle`
  - change zone if needed, go to plugins/MauticMailgunMailerBundle/Config/config.php file and change mailer_mailgun_region parameter(us by default or eu)
  - if you want to change batch send email limit, go to plugins/MauticMailgunMailerBundle/Config/config.php file and change mailer_mailgun_batch_recipient_count parameter to needed number of batch count
  - to receive webhooks, add your api key to config, go to plugins/MauticMailgunMailerBundle/Config/config.php file and change mailer_mailgun_webhook_signing_key to your webhook api key from mailgun admin panel
@@ -11,7 +11,7 @@
  
  ## Usage
  
- - Choose Mailgun Api as the mail service, in mautic mail configuration > Email Settings.
+ - Choose Mailgun Api as the mail service, in Mautic mail configuration > Email Settings.
  
  Enter yours:
  - host(is domain): From your admin panel in Mailgin Api
@@ -25,9 +25,12 @@ Add `https://mautic.loc/mailer/mailgun_api/callback` in the mailgun webhook for 
 - temporary failure
 - unsubscribes
 
-Now your mautic will be able to send through mailgun API and track email events such as bounce, failed, unsubscribe, spam according to the webhook you set in mailgun.
+Now your Mautic will be able to send through mailgun API and track email events such as bounce, failed, unsubscribe, spam according to the webhook you set in mailgun.
 
 Mailgun attachments in process.....
+
+### Mailgun API plugin for Mautic v2
+To use mailgun api plugin for Mautic V2, switch to branch "V2" and download plugin.
 
 ### Mailgun SMTP
 If you need to send messages with mailgun smtp, see:
