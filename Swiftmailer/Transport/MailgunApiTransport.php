@@ -53,7 +53,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
      */
     private $webhookSigningKey;
 
-    public function __construct(TransportCallback $transportCallback, Client $client, TranslatorInterface $translator, int $maxBatchLimit, ?int $batchRecipientCount, string $webhookSigningKey = '')
+    public function __construct(TransportCallback $transportCallback, Client $client, TranslatorInterface $translator, int $maxBatchLimit, ?int $batchRecipientCount, $webhookSigningKey = '')
     {
         $this->transportCallback = $transportCallback;
         $this->client = $client;
@@ -194,7 +194,7 @@ class MailgunApiTransport extends AbstractTokenArrayTransport implements \Swift_
     public function processCallbackRequest(Request $request): void
     {
         $postData = json_decode($request->getContent(), true);
-        if (!$this->webhookSigningKey) {
+        if (empty($this->webhookSigningKey)) {
             return;
         }
 
