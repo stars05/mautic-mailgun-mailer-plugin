@@ -1,5 +1,7 @@
 # Mailgun API plugin for Mautic v3
 
+## Not supported anymore =(
+
 ## Instalation
  - upload the contents in this repo to Mautic instalation `plugins/MauticMailgunMailerBundle`
  - change zone if needed, go to plugins/MauticMailgunMailerBundle/Config/config.php file and change mailer_mailgun_region parameter(us by default or eu)
@@ -41,4 +43,3 @@ If you need to send messages with mailgun smtp, see:
 
 Stanislav Denysenko
 
-stascrack@gmail.com
